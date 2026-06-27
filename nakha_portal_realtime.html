@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบข้อมูลอำเภอนาข่า — จังหวัดมหาสารคาม</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* ========== DARK THEME ========== */
+[data-theme="dark"]{
+  --bg:#080c14;
+  --bg2:#0d1220;
+  --bg3:#121829;
+  --bg4:#1a2135;
+  --border:#1e2d4a;
+  --border2:#2a3d60;
+  --text:#e8edf8;
+  --text2:#8a9ab8;
+  --text3:#4a5878;
+  --accent:#3b82f6;
+  --accent2:#60a5fa;
+  --accent-dim:#0f2040;
+  --accent-bg:#08142e;
+  --green:#22c55e;
+  --green-bg:rgba(34,197,94,.1);
+  --red:#ef4444;
+  --red-bg:rgba(239,68,68,.1);
+  --yellow:#f59e0b;
+  --yellow-bg:rgba(245,158,11,.1);
+  --purple:#a78bfa;
+  --purple-bg:rgba(167,139,250,.1);
+  --orange:#fb923c;
+  --orange-bg:rgba(251,146,60,.1);
+  --shadow:0 4px 24px rgba(0,0,0,.5);
+  --shadow-lg:0 12px 48px rgba(0,0,0,.6);
+  --glow:0 0 20px rgba(59,130,246,.15);
+  --card-bg:linear-gradient(135deg,#0d1220,#121829);
+  --sidebar-bg:linear-gradient(180deg,#0d1220 0%,rgba(8,12,20,.98) 100%);
+  --topbar-bg:rgba(13,18,32,.88);
+  --login-bg:rgba(13,18,32,.96);
+  --input-bg:rgba(255,255,255,.04);
+  --input-focus:rgba(59,130,246,.08);
+  --th-bg:rgba(255,255,255,.025);
+  --tr-hover:rgba(59,130,246,.04);
+  --plate-private-bg:#0e1220;
+  --plate-private-border:#2a3d60;
+  --plate-gov-bg:#081428;
+  --plate-gov-border:#1e4080;
+  --plate-com-bg:#071a0e;
+  --plate-com-border:#1a5c30;
+  --plate-mil-bg:#1a1005;
+  --plate-mil-border:#6a4410;
+  --scrollbar:#1e2d4a;
+  --moon-display:block;
+  --sun-display:none;
+}
+
+/* ========== LIGHT THEME ========== */
+[data-theme="light"]{
+  --bg:#f0f4fb;
+  --bg2:#ffffff;
+  --bg3:#f5f7fc;
+  --bg4:#eaeff7;
+  --border:#d4daea;
+  --border2:#b8c4da;
+  --text:#1a2138;
+  --text2:#4a5878;
+  --text3:#8a96b0;
+  --accent:#2563eb;
+  --accent2:#3b82f6;
+  --accent-dim:#dbeafe;
+  --accent-bg:#eff6ff;
+  --green:#16a34a;
+  --green-bg:rgba(22,163,74,.1);
+  --red:#dc2626;
+  --red-bg:rgba(220,38,38,.1);
+  --yellow:#d97706;
+  --yellow-bg:rgba(217,119,6,.1);
+  --purple:#7c3aed;
+  --purple-bg:rgba(124,58,237,.1);
+  --orange:#ea580c;
+  --orange-bg:rgba(234,88,12,.1);
+  --shadow:0 4px 16px rgba(30,50,100,.08);
+  --shadow-lg:0 12px 40px rgba(30,50,100,.12);
+  --glow:0 0 20px rgba(37,99,235,.1);
+  --card-bg:linear-gradient(135deg,#ffffff,#f5f7fc);
+  --sidebar-bg:linear-gradient(180deg,#ffffff 0%,#f8faff 100%);
+  --topbar-bg:rgba(255,255,255,.92);
+  --login-bg:rgba(255,255,255,.96);
+  --input-bg:rgba(30,50,100,.04);
+  --input-focus:rgba(37,99,235,.06);
+  --th-bg:rgba(30,50,100,.03);
+  --tr-hover:rgba(37,99,235,.03);
+  --plate-private-bg:#f0f4fb;
+  --plate-private-border:#b8c4da;
+  --plate-gov-bg:#eff6ff;
+  --plate-gov-border:#93c5fd;
+  --plate-com-bg:#f0fdf4;
+  --plate-com-border:#86efac;
+  --plate-mil-bg:#fffbeb;
+  --plate-mil-border:#fcd34d;
+  --scrollbar:#d4daea;
+  --moon-display:none;
+  --sun-display:block;
+}
+
+:root{
+  --radius:10px;
+  --font:'Sarabun',sans-serif;
+  --transition:all .25s cubic-bezier(.4,0,.2,1);
+}
+
+/* ========== GLOBAL ========== */
+html{transition:background .3s,color .3s}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;transition:background .3s,color .3s}
+
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:500px;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(59,130,246,.07) 0%,transparent 70%);pointer-events:none;z-index:0;transition:opacity .3s}
+[data-theme="light"] body::before{background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(37,99,235,.04) 0%,transparent 70%)}
+
+/* ========== LOGIN ========== */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;transition:background .3s}
+#login-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 30%,rgba(59,130,246,.1) 0%,transparent 70%);pointer-events:none}
+.login-box{background:var(--login-bg);border:1px solid var(--border2);border-radius:22px;padding:44px;width:400px;text-align:center;position:relative;box-shadow:var(--shadow-lg),var(--glow);backdrop-filter:blur(20px);animation:loginPop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes loginPop{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.login-box::before{content:'';position:absolute;inset:0;border-radius:22px;background:linear-gradient(135deg,rgba(59,130,246,.06) 0%,transparent 60%);pointer-events:none}
+.login-logo{font-size:46px;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(59,130,246,.35));animation:floatLogo 3s ease-in-out infinite}
+@keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.login-title{font-size:24px;font-weight:700;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.08em;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--text3);margin-bottom:28px;letter-spacing:0.05em}
+.login-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0 0 24px}
+.login-box input{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;color:var(--text);font-size:14px;font-family:var(--font);margin-bottom:10px;outline:none;transition:var(--transition)}
+.login-box input:focus{border-color:var(--accent);background:var(--input-focus);box-shadow:0 0 0 3px rgba(59,130,246,.12);transform:translateY(-1px)}
+.login-box input::placeholder{color:var(--text3)}
+.login-btn{width:100%;background:linear-gradient(135deg,#2563eb,#3b82f6);border:none;border-radius:var(--radius);padding:12px;color:#fff;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;margin-top:4px;transition:var(--transition);box-shadow:0 4px 20px rgba(59,130,246,.3);position:relative;overflow:hidden}
+.login-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);opacity:0;transition:opacity .2s}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(59,130,246,.45)}
+.login-btn:hover::after{opacity:1}
+.login-btn:active{transform:translateY(0)}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;min-height:18px;animation:errShake .3s ease when visible}
+@keyframes errShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.login-mode-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);padding:9px 14px;color:var(--text2);font-size:12px;font-family:var(--font);cursor:pointer;margin-top:12px;transition:var(--transition);width:100%}
+.login-mode-btn:hover{border-color:var(--border2);color:var(--text);background:var(--input-bg);transform:translateY(-1px)}
+
+/* ========== THEME TOGGLE ========== */
+.theme-toggle{position:fixed;top:16px;right:16px;z-index:1000;width:40px;height:40px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:var(--transition);box-shadow:var(--shadow)}
+.theme-toggle:hover{border-color:var(--border2);transform:rotate(15deg) scale(1.1);box-shadow:var(--shadow-lg)}
+.theme-toggle .icon-moon{display:var(--moon-display)}
+.theme-toggle .icon-sun{display:var(--sun-display);color:var(--yellow)}
+
+/* ========== LAYOUT ========== */
+#app{display:none;min-height:100vh;position:relative;z-index:1}
+.sidebar{width:228px;background:var(--sidebar-bg);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:50;transition:background .3s,border-color .3s}
+.sidebar-header{padding:18px 16px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;opacity:.8}
+.sidebar-district{font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:3px}
+.sidebar-prov{font-size:11px;color:var(--text3);margin-top:1px}
+.sidebar-nav{flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-group-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;padding:10px 8px 4px;margin-top:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text2);font-size:13px;transition:var(--transition);text-decoration:none;position:relative;overflow:hidden}
+.nav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:0 3px 3px 0;transform:scaleY(0);transition:transform .2s}
+.nav-item:hover{background:var(--input-bg);color:var(--text);transform:translateX(2px)}
+.nav-item.active{background:var(--accent-bg);color:var(--accent2);border:1px solid rgba(59,130,246,.18)}
+.nav-item.active::before{transform:scaleY(1)}
+.nav-item i{font-size:17px;width:18px;flex-shrink:0;transition:transform .2s}
+.nav-item:hover i{transform:scale(1.15)}
+.sidebar-footer{padding:12px;border-top:1px solid var(--border)}
+.user-badge{display:flex;align-items:center;gap:10px}
+.user-avatar{width:34px;height:34px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--accent2);font-weight:700;flex-shrink:0;border:1px solid rgba(59,130,246,.2);transition:var(--transition)}
+.user-avatar:hover{transform:scale(1.1)}
+.user-avatar.mgr{background:var(--orange-bg);color:var(--orange);border-color:rgba(251,146,60,.25)}
+.user-name{font-size:13px;font-weight:600;color:var(--text)}
+.user-role{font-size:11px;color:var(--text3)}
+.logout-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:4px;border-radius:6px;transition:var(--transition);margin-left:auto}
+.logout-btn:hover{color:var(--red);transform:rotate(-10deg) scale(1.1)}
+
+.main{margin-left:228px;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--topbar-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40;transition:background .3s,border-color .3s}
+.topbar-title{font-size:16px;font-weight:600;color:var(--text);flex:1}
+.admin-badge{background:var(--purple-bg);border:1px solid rgba(167,139,250,.3);border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--purple);letter-spacing:.1em;animation:badgePulse 3s ease infinite}
+.manager-badge{background:var(--orange-bg);border:1px solid rgba(251,146,60,.3);border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--orange);letter-spacing:.1em}
+.viewer-badge{background:var(--accent-bg);border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:.1em}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,.2)}50%{box-shadow:0 0 0 4px rgba(167,139,250,0)}}
+
+.page{padding:24px;display:none;animation:pageIn .3s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page.active{display:block}
+
+/* ========== STATS ========== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:18px;transition:var(--transition);position:relative;overflow:hidden;cursor:default}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--purple));opacity:.6;transition:opacity .3s}
+.stat-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(59,130,246,.05),transparent 60%);opacity:0;transition:opacity .3s}
+.stat-card:hover{border-color:var(--border2);box-shadow:var(--shadow),var(--glow);transform:translateY(-3px) scale(1.01)}
+.stat-card:hover::before{opacity:1}
+.stat-card:hover::after{opacity:1}
+.stat-val{font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;transition:transform .2s}
+.stat-card:hover .stat-val{transform:scale(1.05)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:6px;text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.stat-icon{font-size:22px;margin-bottom:10px;transition:transform .3s}
+.stat-card:hover .stat-icon{transform:scale(1.2) rotate(5deg)}
+
+/* ========== TABLE ========== */
+.table-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.table-card:hover{box-shadow:var(--shadow)}
+.table-toolbar{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.table-title{font-size:14px;font-weight:600;color:var(--text);flex:1}
+.search-input{background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;width:220px;transition:var(--transition)}
+.search-input:focus{border-color:var(--accent);background:var(--input-focus);box-shadow:0 0 0 3px rgba(59,130,246,.08);transform:scale(1.01)}
+.search-input::placeholder{color:var(--text3)}
+select.filter-sel{background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;cursor:pointer;transition:var(--transition)}
+select.filter-sel:hover{border-color:var(--border2)}
+table{width:100%;border-collapse:collapse}
+th{background:var(--th-bg);color:var(--text3);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:11px 16px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text);font-size:13px;vertical-align:middle;transition:background .15s}
+tr:last-child td{border-bottom:none}
+tr{transition:background .15s}
+tr:hover td{background:var(--tr-hover)}
+tr:hover td:first-child{padding-left:20px}
+.empty-row td{text-align:center;color:var(--text3);padding:40px}
+
+/* ========== PLATES ========== */
+.plate{display:inline-block;font-family:monospace;font-size:13px;font-weight:700;padding:4px 11px;border-radius:7px;border:2px solid;letter-spacing:.05em;transition:var(--transition)}
+.plate:hover{transform:scale(1.05)}
+.plate-private{background:var(--plate-private-bg);border-color:var(--plate-private-border);color:var(--text)}
+.plate-gov{background:var(--plate-gov-bg);border-color:var(--plate-gov-border);color:#3b82f6}
+[data-theme="light"] .plate-gov{color:#1d4ed8}
+.plate-com{background:var(--plate-com-bg);border-color:var(--plate-com-border);color:#16a34a}
+.plate-mil{background:var(--plate-mil-bg);border-color:var(--plate-mil-border);color:#d97706}
+
+/* ========== BADGES ========== */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px;letter-spacing:.04em;transition:var(--transition)}
+.badge:hover{transform:scale(1.05)}
+.badge-active{background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.badge-exp{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,158,11,.25)}
+.badge-sus{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.badge-gov{background:var(--accent-bg);color:var(--accent2);border:1px solid rgba(59,130,246,.25)}
+.badge-private{background:var(--input-bg);color:var(--text2);border:1px solid var(--border)}
+.badge-com{background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.badge-mil{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(245,158,11,.25)}
+
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;flex-shrink:0;animation:dotBlink 2s ease infinite}
+.dot-green{background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot-yellow{background:var(--yellow);box-shadow:0 0 6px var(--yellow);animation-delay:.3s}
+.dot-red{background:var(--red);box-shadow:0 0 6px var(--red);animation-delay:.6s}
+@keyframes dotBlink{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ========== BUTTONS ========== */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;border:none;transition:var(--transition);position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);opacity:0;transition:opacity .2s}
+.btn:hover::after{opacity:1}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.97)}
+.btn-primary{background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,.25)}
+.btn-primary:hover{box-shadow:0 6px 24px rgba(59,130,246,.4)}
+.btn-danger{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;box-shadow:0 4px 14px rgba(239,68,68,.2)}
+.btn-danger:hover{box-shadow:0 6px 24px rgba(239,68,68,.35)}
+.btn-ghost{background:var(--input-bg);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);background:var(--bg3)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn i{font-size:15px;transition:transform .2s}
+.btn:hover i{transform:scale(1.15)}
+.btn-orange{background:linear-gradient(135deg,#c2410c,#fb923c);color:#fff;box-shadow:0 4px 14px rgba(251,146,60,.2)}
+.btn-orange:hover{box-shadow:0 6px 24px rgba(251,146,60,.35)}
+
+/* ========== MODAL ========== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex;animation:overlayIn .2s ease}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--card-bg);border:1px solid var(--border2);border-radius:18px;padding:26px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:modalIn .3s cubic-bezier(.34,1.4,.64,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(-20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:22px;display:flex;align-items:center;gap:10px}
+.modal-title i{color:var(--accent);font-size:20px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;color:var(--text3);margin-bottom:6px;display:block;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.form-input{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:var(--transition)}
+.form-input:focus{border-color:var(--accent);background:var(--input-focus);box-shadow:0 0 0 3px rgba(59,130,246,.08);transform:translateY(-1px)}
+.form-input::placeholder{color:var(--text3)}
+select.form-input{cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:22px;border-top:1px solid var(--border);padding-top:18px}
+
+/* ========== TOAST ========== */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:13px 18px;font-size:13px;color:var(--text);z-index:999;display:flex;align-items:center;gap:10px;transform:translateY(80px) scale(.9);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);max-width:320px;box-shadow:var(--shadow-lg)}
+.toast.show{transform:translateY(0) scale(1);opacity:1}
+.toast i{font-size:18px}
+.toast.success i{color:var(--green)}
+.toast.error i{color:var(--red)}
+.toast.info i{color:var(--accent)}
+
+/* ========== COLOR DOT ========== */
+.color-swatch{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid var(--border2);vertical-align:middle;margin-right:5px;transition:transform .2s;box-shadow:0 0 4px rgba(0,0,0,.2)}
+td:hover .color-swatch{transform:scale(1.4)}
+
+/* ========== PAGE HEADER ========== */
+.page-header{margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.page-header-left h2{font-size:22px;font-weight:800;color:var(--text)}
+.page-header-left p{font-size:12px;color:var(--text3);margin-top:4px}
+
+/* ========== AGENCY CARDS ========== */
+.agency-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.agency-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:var(--transition);position:relative;overflow:hidden}
+.agency-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple));transform:scaleX(0);transition:transform .3s;transform-origin:left}
+.agency-card:hover{border-color:var(--border2);box-shadow:var(--shadow),var(--glow);transform:translateY(-4px)}
+.agency-card:hover::before{transform:scaleX(1)}
+.agency-card-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.agency-icon-lg{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--input-bg);border:1px solid var(--border);flex-shrink:0;transition:var(--transition)}
+.agency-card:hover .agency-icon-lg{transform:scale(1.1) rotate(5deg);background:var(--accent-dim)}
+.agency-card-name{font-size:14px;font-weight:700;color:var(--text)}
+.agency-card-dept{font-size:11px;color:var(--text3);margin-top:3px}
+.agency-card-stats{display:flex;gap:16px}
+.agency-stat{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:.04em}
+.agency-stat span{font-size:18px;font-weight:800;color:var(--text);display:block;transition:transform .2s}
+.agency-card:hover .agency-stat span{transform:scale(1.1)}
+.agency-card-actions{margin-top:14px;display:flex;gap:6px;opacity:0;transform:translateY(4px);transition:var(--transition)}
+.agency-card:hover .agency-card-actions{opacity:1;transform:translateY(0)}
+
+/* ========== DRAWER ========== */
+.drawer{position:fixed;right:0;top:0;bottom:0;width:460px;background:var(--bg2);border-left:1px solid var(--border2);z-index:100;transform:translateX(100%);transition:transform .3s cubic-bezier(.34,1.2,.64,1);overflow-y:auto}
+.drawer.open{transform:translateX(0);box-shadow:-24px 0 80px rgba(0,0,0,.3)}
+.drawer-header{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:var(--topbar-bg);backdrop-filter:blur(10px);z-index:1}
+.drawer-title{font-size:15px;font-weight:700;color:var(--text);flex:1}
+.drawer-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;padding:4px;border-radius:8px;transition:var(--transition)}
+.drawer-close:hover{color:var(--text);background:var(--input-bg);transform:rotate(90deg)}
+.drawer-body{padding:22px}
+.detail-section{margin-bottom:22px}
+.detail-section-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-field{background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:11px 14px;transition:var(--transition)}
+.detail-field:hover{border-color:var(--border2);transform:scale(1.01)}
+.detail-field-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.detail-field-val{font-size:14px;font-weight:500;color:var(--text);margin-top:4px}
+.plate-big{font-size:22px;font-weight:800;letter-spacing:.08em;font-family:monospace;display:inline-block;padding:10px 24px;border-radius:10px;border:3px solid;transition:var(--transition)}
+.plate-big:hover{transform:scale(1.05)}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
+
+/* ========== ACCOUNTS PAGE ========== */
+.accounts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:16px}
+.account-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:20px;transition:var(--transition)}
+.account-card:hover{border-color:var(--border2);box-shadow:var(--shadow);transform:translateY(-3px)}
+.account-card-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.account-avatar-lg{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0;transition:var(--transition)}
+.account-card:hover .account-avatar-lg{transform:scale(1.1) rotate(3deg)}
+.account-avatar-rifle{background:var(--purple-bg);border:1px solid rgba(167,139,250,.25);color:var(--purple)}
+.account-avatar-mgr{background:var(--orange-bg);border:1px solid rgba(251,146,60,.25);color:var(--orange)}
+.account-name{font-size:15px;font-weight:700;color:var(--text)}
+.account-role-label{font-size:11px;margin-top:3px}
+.role-rifle{color:var(--purple)}
+.role-manager{color:var(--orange)}
+.account-info{background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text3);margin-bottom:12px}
+.account-info code{font-family:monospace;color:var(--text2);font-size:13px}
+.account-actions{display:flex;gap:8px}
+.info-box{background:var(--accent-bg);border:1px solid rgba(59,130,246,.18);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2);margin-bottom:20px;display:flex;align-items:flex-start;gap:10px}
+.info-box i{color:var(--accent);flex-shrink:0;margin-top:1px;font-size:16px}
+.rifle-card-special{border-color:rgba(167,139,250,.2)!important}
+
+.admin-only-row{opacity:.3;pointer-events:none}
+.admin-only-row.unlocked{opacity:1;pointer-events:all}
+
+/* ========== RIPPLE ========== */
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.2);transform:scale(0);animation:rippleOut .6s linear;pointer-events:none}
+@keyframes rippleOut{to{transform:scale(4);opacity:0}}
+
+/* ========== SKELETON LOADER ========== */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+</style>
+</head>
+<body>
+
+<!-- THEME TOGGLE (always visible) -->
+<button class="theme-toggle" onclick="toggleTheme()" title="สลับธีมสว่าง/มืด">
+  <i class="ti ti-moon icon-moon"></i>
+  <i class="ti ti-sun icon-sun"></i>
+</button>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🏛</div>
+    <div class="login-title">NAKHA PORTAL</div>
+    <div class="login-sub">อำเภอนาข่า · จังหวัดมหาสารคาม · ระบบเกม</div>
+    <div class="login-divider"></div>
+    <input type="text" id="login-user" placeholder="ชื่อผู้ใช้งาน" autocomplete="off">
+    <input type="password" id="login-pass" placeholder="รหัสผ่าน / รหัสหน่วยงาน">
+    <button class="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="login-err" id="login-err"></div>
+    <button class="login-mode-btn" onclick="toggleLoginMode()">ล็อกอินเป็นผู้ชม (ไม่ต้องมีรหัส)</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">GAME SERVER</div>
+      <div class="sidebar-district">อำเภอนาข่า</div>
+      <div class="sidebar-prov">จังหวัดมหาสารคาม</div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-group-label">หลัก</div>
+      <a class="nav-item active" onclick="goPage('dashboard')" href="#"><i class="ti ti-layout-dashboard"></i> ภาพรวม</a>
+      <a class="nav-item" onclick="goPage('agencies')" href="#"><i class="ti ti-building-community"></i> หน่วยงาน</a>
+      <a class="nav-item" onclick="goPage('vehicles')" href="#"><i class="ti ti-car"></i> ยานพาหนะ</a>
+      <a class="nav-item" onclick="goPage('plates')" href="#"><i class="ti ti-license"></i> ป้ายทะเบียน</a>
+      <div class="nav-group-label" style="margin-top:4px">จัดการข้อมูล</div>
+      <a class="nav-item admin-only-row" onclick="openAddAgency()" href="#"><i class="ti ti-building-plus"></i> เพิ่มหน่วยงาน</a>
+      <a class="nav-item admin-only-row" onclick="openAddVehicle()" href="#"><i class="ti ti-plus"></i> เพิ่มยานพาหนะ</a>
+      <a class="nav-item admin-only-row" onclick="openAddPlate()" href="#"><i class="ti ti-id"></i> เพิ่มป้ายทะเบียน</a>
+      <div class="nav-group-label" id="nav-accounts-label" style="margin-top:4px;display:none">ระบบ RIFLE</div>
+      <a class="nav-item" id="nav-accounts" onclick="goPage('accounts')" href="#" style="display:none"><i class="ti ti-users"></i> จัดการบัญชีผู้ดูแล</a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar" id="sidebar-avatar">?</div>
+        <div><div class="user-name" id="sidebar-username">-</div><div class="user-role" id="sidebar-role">-</div></div>
+        <button class="logout-btn" onclick="doLogout()" title="ออกจากระบบ"><i class="ti ti-logout"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">ภาพรวม</div>
+      <span id="topbar-badge"></span>
+      <span id="sync-indicator" style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;display:none">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:dotBlink 2s ease infinite;display:inline-block"></span>
+        LIVE
+      </span>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid" id="dash-stats"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="table-card">
+          <div class="table-toolbar"><div class="table-title">🚗 ยานพาหนะล่าสุด</div></div>
+          <table><thead><tr><th>ทะเบียน</th><th>เจ้าของ</th><th>สถานะ</th></tr></thead>
+          <tbody id="recent-vehicles"></tbody></table>
+        </div>
+        <div class="table-card">
+          <div class="table-toolbar"><div class="table-title">🏛 หน่วยงาน</div></div>
+          <table><thead><tr><th>หน่วยงาน</th><th>แผนก</th><th>รถ</th></tr></thead>
+          <tbody id="dash-agencies"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENCIES -->
+    <div class="page" id="page-agencies">
+      <div class="page-header">
+        <div class="page-header-left"><h2>หน่วยงานทั้งหมด</h2><p id="agency-count-label">กำลังโหลด...</p></div>
+        <button class="btn btn-primary admin-only-row" onclick="openAddAgency()"><i class="ti ti-plus"></i> เพิ่มหน่วยงาน</button>
+      </div>
+      <div class="agency-grid" id="agency-grid"></div>
+    </div>
+
+    <!-- VEHICLES -->
+    <div class="page" id="page-vehicles">
+      <div class="page-header">
+        <div class="page-header-left"><h2>ยานพาหนะ</h2><p id="vehicle-count-label">-</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select class="filter-sel" id="veh-filter-agency" onchange="renderVehicles()"><option value="">ทุกหน่วยงาน</option></select>
+          <select class="filter-sel" id="veh-filter-status" onchange="renderVehicles()">
+            <option value="">ทุกสถานะ</option><option value="ใช้งาน">ใช้งาน</option>
+            <option value="ใกล้หมดอายุ">ใกล้หมดอายุ</option><option value="พักการใช้งาน">พักการใช้งาน</option>
+          </select>
+          <button class="btn btn-primary admin-only-row" onclick="openAddVehicle()"><i class="ti ti-plus"></i> เพิ่มรถ</button>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="table-title">รายการยานพาหนะ</div>
+          <input class="search-input" placeholder="🔍 ค้นหา..." id="veh-search" oninput="renderVehicles()">
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>ทะเบียน</th><th>เจ้าของ</th><th>หน่วยงาน</th><th>ยี่ห้อ-รุ่น</th><th>สี</th><th>ประเภท</th><th>สถานะ</th><th class="admin-only-row" id="veh-action-th">จัดการ</th></tr></thead>
+            <tbody id="vehicle-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLATES -->
+    <div class="page" id="page-plates">
+      <div class="page-header">
+        <div class="page-header-left"><h2>ป้ายทะเบียน</h2><p id="plate-count-label">-</p></div>
+        <div style="display:flex;gap:8px">
+          <select class="filter-sel" id="plate-filter-type" onchange="renderPlates()">
+            <option value="">ทุกประเภท</option><option value="ส่วนบุคคล">ส่วนบุคคล</option>
+            <option value="ราชการ">ราชการ</option><option value="พาณิชย์">พาณิชย์</option><option value="ทหาร">ทหาร</option>
+          </select>
+          <button class="btn btn-primary admin-only-row" onclick="openAddPlate()"><i class="ti ti-plus"></i> เพิ่มทะเบียน</button>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="table-title">รายการป้ายทะเบียน</div>
+          <input class="search-input" placeholder="🔍 ค้นหาทะเบียน..." id="plate-search" oninput="renderPlates()">
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>ป้ายทะเบียน</th><th>จังหวัด</th><th>ประเภท</th><th>เชื่อมกับ</th><th>วันจดทะเบียน</th><th>วันหมดอายุ</th><th>สถานะ</th><th class="admin-only-row" id="plate-action-th">จัดการ</th></tr></thead>
+            <tbody id="plate-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="page" id="page-accounts">
+      <div class="page-header">
+        <div class="page-header-left"><h2>จัดการบัญชีผู้ดูแล</h2><p>สร้างและจัดการบัญชีผู้จัดการระบบ (เฉพาะ RIFLE)</p></div>
+        <button class="btn btn-orange" onclick="openAddManager()"><i class="ti ti-user-plus"></i> เพิ่มบัญชีผู้จัดการ</button>
+      </div>
+      <div class="info-box">
+        <i class="ti ti-info-circle"></i>
+        <div><strong>บัญชีผู้จัดการ (Manager)</strong> สามารถเพิ่ม แก้ไข และลบข้อมูลได้ทุกอย่าง แต่ไม่สามารถจัดการบัญชีผู้ดูแลได้ — เฉพาะ RIFLE เท่านั้น</div>
+      </div>
+      <div class="accounts-grid" id="accounts-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: AGENCY -->
+<div class="modal-overlay" id="modal-agency">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-building-plus"></i> <span id="modal-agency-title">เพิ่มหน่วยงานใหม่</span></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ชื่อหน่วยงาน *</label><input class="form-input" id="ag-name" placeholder="เช่น ที่ว่าการอำเภอ"></div>
+      <div class="form-group"><label class="form-label">แผนก / ฝ่าย</label><input class="form-input" id="ag-dept" placeholder="เช่น ฝ่ายปกครอง"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ไอคอน (emoji)</label><input class="form-input" id="ag-icon" placeholder="🏛" maxlength="4"></div>
+      <div class="form-group"><label class="form-label">ประเภทหน่วยงาน</label>
+        <select class="form-input" id="ag-type">
+          <option value="ราชการ">ราชการ</option><option value="ความมั่นคง">ความมั่นคง</option>
+          <option value="สาธารณสุข">สาธารณสุข</option><option value="การศึกษา">การศึกษา</option>
+          <option value="เอกชน">เอกชน</option><option value="อื่นๆ">อื่นๆ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">รายละเอียด</label><input class="form-input" id="ag-desc" placeholder="รายละเอียดเพิ่มเติม"></div>
+    <input type="hidden" id="ag-edit-id">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-agency')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveAgency()"><i class="ti ti-check"></i> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VEHICLE -->
+<div class="modal-overlay" id="modal-vehicle">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-car"></i> <span id="modal-vehicle-title">เพิ่มยานพาหนะ</span></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">เลขทะเบียน *</label><input class="form-input" id="veh-plate" placeholder="กข 1234"></div>
+      <div class="form-group"><label class="form-label">จังหวัด *</label>
+        <select class="form-input" id="veh-province">
+          <option value="มค">มหาสารคาม (มค)</option><option value="กท">กรุงเทพ (กท)</option>
+          <option value="ขก">ขอนแก่น (ขก)</option><option value="อด">อุดรธานี (อด)</option>
+          <option value="นค">นครราชสีมา (นค)</option><option value="ชม">เชียงใหม่ (ชม)</option>
+          <option value="สข">สงขลา (สข)</option><option value="อน">อุบลราชธานี (อน)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">เจ้าของ *</label><input class="form-input" id="veh-owner" placeholder="ชื่อ-นามสกุล"></div>
+      <div class="form-group"><label class="form-label">หน่วยงาน</label><select class="form-input" id="veh-agency"><option value="">— ไม่สังกัด —</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ยี่ห้อ / รุ่น *</label><input class="form-input" id="veh-make" placeholder="Toyota Hilux"></div>
+      <div class="form-group"><label class="form-label">ปีผลิต (พ.ศ.)</label><input class="form-input" id="veh-year" type="number" min="2500" max="2580" placeholder="2565"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">สีรถ</label>
+        <select class="form-input" id="veh-color">
+          <option value="ขาว">ขาว</option><option value="ดำ">ดำ</option><option value="เทา">เทา</option>
+          <option value="แดง">แดง</option><option value="น้ำเงิน">น้ำเงิน</option><option value="เงิน">เงิน</option>
+          <option value="ชมพู">ชมพู</option><option value="เขียว">เขียว</option><option value="ส้ม">ส้ม</option><option value="เหลือง">เหลือง</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">ประเภท</label>
+        <select class="form-input" id="veh-type">
+          <option value="ส่วนบุคคล">ส่วนบุคคล</option><option value="ราชการ">ราชการ</option>
+          <option value="พาณิชย์">พาณิชย์</option><option value="ทหาร">ทหาร</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">วันจดทะเบียน</label><input class="form-input" id="veh-reg" type="date"></div>
+      <div class="form-group"><label class="form-label">วันหมดอายุ</label><input class="form-input" id="veh-exp" type="date"></div>
+    </div>
+    <div class="form-group"><label class="form-label">สถานะ</label>
+      <select class="form-input" id="veh-status">
+        <option value="ใช้งาน">ใช้งาน</option><option value="ใกล้หมดอายุ">ใกล้หมดอายุ</option><option value="พักการใช้งาน">พักการใช้งาน</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">หมายเหตุ</label><input class="form-input" id="veh-note" placeholder="ข้อมูลเพิ่มเติม"></div>
+    <input type="hidden" id="veh-edit-id">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-vehicle')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveVehicle()"><i class="ti ti-check"></i> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PLATE -->
+<div class="modal-overlay" id="modal-plate">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-id"></i> <span id="modal-plate-title">เพิ่มป้ายทะเบียน</span></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">เลขทะเบียน *</label><input class="form-input" id="pl-num" placeholder="กข 1234"></div>
+      <div class="form-group"><label class="form-label">จังหวัด *</label>
+        <select class="form-input" id="pl-province">
+          <option value="มค">มหาสารคาม (มค)</option><option value="กท">กรุงเทพ (กท)</option>
+          <option value="ขก">ขอนแก่น (ขก)</option><option value="อด">อุดรธานี (อด)</option>
+          <option value="นค">นครราชสีมา (นค)</option><option value="ชม">เชียงใหม่ (ชม)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ประเภทป้าย</label>
+        <select class="form-input" id="pl-type">
+          <option value="ส่วนบุคคล">ส่วนบุคคล</option><option value="ราชการ">ราชการ</option>
+          <option value="พาณิชย์">พาณิชย์</option><option value="ทหาร">ทหาร</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">เชื่อมกับยานพาหนะ</label><select class="form-input" id="pl-vehicle"><option value="">— ยังไม่เชื่อม —</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">วันจดทะเบียน</label><input class="form-input" id="pl-reg" type="date"></div>
+      <div class="form-group"><label class="form-label">วันหมดอายุ</label><input class="form-input" id="pl-exp" type="date"></div>
+    </div>
+    <div class="form-group"><label class="form-label">สถานะ</label>
+      <select class="form-input" id="pl-status">
+        <option value="ใช้งาน">ใช้งาน</option><option value="ใกล้หมดอายุ">ใกล้หมดอายุ</option><option value="พักการใช้งาน">พักการใช้งาน</option>
+      </select>
+    </div>
+    <input type="hidden" id="pl-edit-id">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-plate')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="savePlate()"><i class="ti ti-check"></i> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: MANAGER -->
+<div class="modal-overlay" id="modal-manager">
+  <div class="modal">
+    <div class="modal-title"><i class="ti ti-user-plus" style="color:var(--orange)"></i> <span id="modal-manager-title">เพิ่มบัญชีผู้จัดการ</span></div>
+    <div class="form-group"><label class="form-label">ชื่อผู้จัดการ *</label><input class="form-input" id="mgr-name" placeholder="เช่น นายสมชาย"></div>
+    <div class="form-group">
+      <label class="form-label">รหัสผ่านสำหรับเข้าสู่ระบบ *</label>
+      <input class="form-input" id="mgr-pass" placeholder="ตั้งรหัสผ่าน" autocomplete="new-password">
+      <div style="font-size:11px;color:var(--text3);margin-top:6px"><i class="ti ti-info-circle" style="vertical-align:middle;margin-right:4px"></i>ผู้จัดการจะใช้รหัสนี้เพื่อล็อกอินในฐานะ Manager</div>
+    </div>
+    <div class="form-group"><label class="form-label">ตำแหน่ง / หมายเหตุ</label><input class="form-input" id="mgr-note" placeholder="เช่น ผู้ช่วยเจ้าหน้าที่ (ไม่บังคับ)"></div>
+    <input type="hidden" id="mgr-edit-id">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-manager')">ยกเลิก</button>
+      <button class="btn btn-orange" onclick="saveManager()"><i class="ti ti-check"></i> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="drawer" id="drawer-vehicle">
+  <div class="drawer-header">
+    <div class="drawer-title" id="drawer-veh-title">รายละเอียดยานพาหนะ</div>
+    <button class="drawer-close" onclick="closeDrawer('drawer-vehicle')"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="drawer-body" id="drawer-veh-body"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg">บันทึกสำเร็จ</span></div>
+
+<script>
+// ===== THEME =====
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme',isDark?'light':'dark');
+  localStorage.setItem('theme',isDark?'light':'dark');
+}
+// Load saved theme
+(function(){const t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)})();
+
+// ===== RIPPLE EFFECT =====
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.btn,.nav-item,.login-btn');
+  if(!btn||btn.classList.contains('btn-ghost')) return;
+  const r=document.createElement('span');
+  const rect=btn.getBoundingClientRect();
+  const size=Math.max(rect.width,rect.height);
+  r.className='ripple';
+  r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+  btn.style.position='relative';
+  btn.appendChild(r);
+  setTimeout(()=>r.remove(),600);
+});
+
+// ===== FIREBASE CONFIG =====
+// *** แก้ค่าด้านล่างนี้ให้ตรงกับโปรเจกต์ Firebase ของคุณ ***
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  appId: "YOUR_APP_ID"
+};
+// *** สิ้นสุดการตั้งค่า ***
+
+let firebaseApp, firebaseDB, fbRef;
+let firebaseReady = false;
+
+function initFirebase() {
+  try {
+    firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+    firebaseDB = firebase.database();
+    fbRef = firebaseDB.ref('nakha');
+    firebaseReady = true;
+    const si = document.getElementById('sync-indicator');
+    if (si) si.style.display = 'flex';
+    showToast('🔥 Firebase เชื่อมต่อสำเร็จ — Realtime sync เปิดใช้งาน', 'info');
+    startRealtimeSync();
+  } catch(e) {
+    console.warn('Firebase init failed, using local mode:', e);
+    firebaseReady = false;
+    showToast('⚠️ ทำงานแบบออฟไลน์ (ตั้งค่า Firebase เพื่อ sync)', 'info');
+  }
+}
+
+function startRealtimeSync() {
+  if (!firebaseReady) return;
+  // เมื่อข้อมูลเปลี่ยนแปลงจากคนอื่น อัปเดตหน้าทันที
+  fbRef.on('value', snap => {
+    const data = snap.val();
+    if (!data) {
+      // ครั้งแรก — push ข้อมูลเริ่มต้นขึ้น Firebase
+      fbRef.set({ agencies: db.agencies, vehicles: db.vehicles, plates: db.plates, managers: managerAccounts });
+      return;
+    }
+    db.agencies = data.agencies ? Object.values(data.agencies) : db.agencies;
+    db.vehicles = data.vehicles ? Object.values(data.vehicles) : db.vehicles;
+    db.plates = data.plates ? Object.values(data.plates) : db.plates;
+    managerAccounts = data.managers ? Object.values(data.managers) : [];
+    // re-render ถ้า login แล้ว
+    if (document.getElementById('app').style.display !== 'none') {
+      renderDashboard(); renderAgencies(); renderVehicles(); renderPlates(); populateAgencyDropdowns();
+    }
+  });
+}
+
+function fbSave() {
+  if (!firebaseReady) return;
+  fbRef.set({
+    agencies: db.agencies,
+    vehicles: db.vehicles,
+    plates: db.plates,
+    managers: managerAccounts
+  });
+}
+
+// ===== DATA =====
+const RIFLE_CODE='2250256';
+let isAdmin=false,isRifle=false,currentUser='',viewerMode=false;
+let managerAccounts=[];
+let db={
+  agencies:[
+    {id:'ag1',name:'ที่ว่าการอำเภอนาข่า',dept:'ฝ่ายปกครอง',icon:'🏛',type:'ราชการ',desc:''},
+    {id:'ag2',name:'สถานีตำรวจภูธรนาข่า',dept:'ความมั่นคง',icon:'🚔',type:'ความมั่นคง',desc:''},
+    {id:'ag3',name:'โรงพยาบาลส่งเสริมสุขภาพ',dept:'สาธารณสุข',icon:'🏥',type:'สาธารณสุข',desc:''},
+    {id:'ag4',name:'โรงเรียนนาข่าวิทยาคม',dept:'การศึกษา',icon:'🏫',type:'การศึกษา',desc:''},
+    {id:'ag5',name:'สำนักงานเกษตรอำเภอ',dept:'เกษตรกรรม',icon:'🌾',type:'ราชการ',desc:''},
+  ],
+  vehicles:[
+    {id:'v1',plate:'กข 1001',province:'มค',owner:'นายสมชาย ดีมาก',agencyId:'ag1',make:'Toyota Camry',year:2565,color:'ขาว',type:'ราชการ',status:'ใช้งาน',reg:'01/01/2565',exp:'01/01/2568',note:''},
+    {id:'v2',plate:'ขค 2234',province:'มค',owner:'สถานีตำรวจ',agencyId:'ag2',make:'Ford Ranger',year:2564,color:'ดำ',type:'ราชการ',status:'ใช้งาน',reg:'15/03/2564',exp:'15/03/2567',note:''},
+    {id:'v3',plate:'ฉช 3310',province:'มค',owner:'นางสาวกมลา ใจดี',agencyId:'',make:'Honda Jazz',year:2563,color:'แดง',type:'ส่วนบุคคล',status:'ใกล้หมดอายุ',reg:'10/06/2563',exp:'10/06/2566',note:''},
+    {id:'v4',plate:'งด 4455',province:'มค',owner:'บจก.นาข่าขนส่ง',agencyId:'',make:'Isuzu D-Max',year:2562,color:'เงิน',type:'พาณิชย์',status:'ใช้งาน',reg:'20/08/2562',exp:'20/08/2565',note:''},
+    {id:'v5',plate:'ปผ 5599',province:'มค',owner:'โรงพยาบาล รพ.สต.',agencyId:'ag3',make:'Toyota Fortuner',year:2566,color:'ขาว',type:'ราชการ',status:'ใช้งาน',reg:'01/04/2566',exp:'01/04/2569',note:'รถผู้อำนวยการ'},
+  ],
+  plates:[
+    {id:'pl1',num:'กข 1001',province:'มค',type:'ราชการ',vehicleId:'v1',reg:'01/01/2565',exp:'01/01/2568',status:'ใช้งาน'},
+    {id:'pl2',num:'ขค 2234',province:'มค',type:'ราชการ',vehicleId:'v2',reg:'15/03/2564',exp:'15/03/2567',status:'ใช้งาน'},
+    {id:'pl3',num:'ฉช 3310',province:'มค',type:'ส่วนบุคคล',vehicleId:'v3',reg:'10/06/2563',exp:'10/06/2566',status:'ใกล้หมดอายุ'},
+    {id:'pl4',num:'งด 4455',province:'มค',type:'พาณิชย์',vehicleId:'v4',reg:'20/08/2562',exp:'20/08/2565',status:'ใช้งาน'},
+    {id:'pl5',num:'ปผ 5599',province:'มค',type:'ราชการ',vehicleId:'v5',reg:'01/04/2566',exp:'01/04/2569',status:'ใช้งาน'},
+  ]
+};
+function genId(p){return p+Date.now()+Math.random().toString(36).slice(2,6)}
+
+// ===== AUTH =====
+function toggleLoginMode(){
+  viewerMode=!viewerMode;
+  const btn=document.querySelector('.login-mode-btn');
+  const pe=document.getElementById('login-pass');
+  const ue=document.getElementById('login-user');
+  if(viewerMode){btn.textContent='เข้าสู่ระบบด้วยรหัส RIFLE / Manager';pe.placeholder='ไม่ต้องกรอก (โหมดผู้ชม)';ue.placeholder='ชื่อสำหรับแสดง';}
+  else{btn.textContent='ล็อกอินเป็นผู้ชม (ไม่ต้องมีรหัส)';pe.placeholder='รหัสผ่าน / รหัสหน่วยงาน';ue.placeholder='ชื่อผู้ใช้งาน';}
+}
+function doLogin(){
+  const user=document.getElementById('login-user').value.trim();
+  const pass=document.getElementById('login-pass').value.trim();
+  const err=document.getElementById('login-err');
+  if(!user){err.textContent='กรุณากรอกชื่อผู้ใช้งาน';shakeErr();return;}
+  if(viewerMode){isAdmin=false;isRifle=false;currentUser=user||'ผู้เยี่ยมชม';_saveSession('viewer',currentUser);launchApp('viewer');return;}
+  if(pass===RIFLE_CODE){isAdmin=true;isRifle=true;currentUser=user||'RIFLE';_saveSession('rifle',currentUser);launchApp('rifle');return;}
+  const mgr=managerAccounts.find(m=>m.pass===pass);
+  if(mgr){isAdmin=true;isRifle=false;currentUser=user||mgr.name;_saveSession('manager',currentUser);launchApp('manager');return;}
+  if(pass===''){isAdmin=false;isRifle=false;currentUser=user;_saveSession('viewer',currentUser);launchApp('viewer');}
+  else{err.textContent='รหัสไม่ถูกต้อง';shakeErr();}
+}
+function shakeErr(){
+  const e=document.getElementById('login-err');
+  e.style.animation='none';requestAnimationFrame(()=>{e.style.animation='errShake .3s ease';});
+}
+
+// ===== SESSION (จำ login ไว้เมื่อรีเฟรช) =====
+function _saveSession(role, user) {
+  try { sessionStorage.setItem('nakha_role', role); sessionStorage.setItem('nakha_user', user); } catch(e){}
+}
+function _clearSession() {
+  try { sessionStorage.removeItem('nakha_role'); sessionStorage.removeItem('nakha_user'); } catch(e){}
+}
+function _restoreSession() {
+  try {
+    const role = sessionStorage.getItem('nakha_role');
+    const user = sessionStorage.getItem('nakha_user');
+    if (role && user) {
+      currentUser = user;
+      if (role === 'rifle') { isAdmin=true; isRifle=true; }
+      else if (role === 'manager') { isAdmin=true; isRifle=false; }
+      else { isAdmin=false; isRifle=false; }
+      launchApp(role);
+      return true;
+    }
+  } catch(e){}
+  return false;
+}
+
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('login-user').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('login-pass').focus()});
+
+function launchApp(role){
+  const ls=document.getElementById('login-screen');
+  ls.style.transition='opacity .4s';ls.style.opacity='0';
+  setTimeout(()=>{ls.style.display='none';document.getElementById('app').style.display='block';},400);
+  document.getElementById('sidebar-username').textContent=currentUser;
+  const av=document.getElementById('sidebar-avatar');
+  av.textContent=currentUser.slice(0,2).toUpperCase();
+  const badge=document.getElementById('topbar-badge');
+  const roleEl=document.getElementById('sidebar-role');
+  if(role==='rifle'){av.className='user-avatar';roleEl.textContent='RIFLE — ผู้ดูแลระบบสูงสุด';badge.innerHTML='<span class="admin-badge">⚡ RIFLE ADMIN</span>';document.getElementById('nav-accounts').style.display='flex';document.getElementById('nav-accounts-label').style.display='block';}
+  else if(role==='manager'){av.className='user-avatar mgr';roleEl.textContent='Manager — ผู้จัดการระบบ';badge.innerHTML='<span class="manager-badge">🔧 MANAGER</span>';document.getElementById('nav-accounts').style.display='none';document.getElementById('nav-accounts-label').style.display='none';}
+  else{av.className='user-avatar';roleEl.textContent='ผู้ชม';badge.innerHTML='<span class="viewer-badge">👁 VIEWER</span>';document.getElementById('nav-accounts').style.display='none';document.getElementById('nav-accounts-label').style.display='none';}
+  document.querySelectorAll('.admin-only-row').forEach(el=>{if(isAdmin)el.classList.add('unlocked');else el.classList.remove('unlocked');});
+  renderDashboard();renderAgencies();renderVehicles();renderPlates();populateAgencyDropdowns();
+  // เชื่อม Firebase เมื่อ login ครั้งแรก
+  if (!firebaseReady) { try { initFirebase(); } catch(e){} }
+}
+function doLogout(){
+  _clearSession();
+  const app=document.getElementById('app');
+  app.style.transition='opacity .3s';app.style.opacity='0';
+  setTimeout(()=>{
+    app.style.display='none';app.style.opacity='1';app.style.transition='';
+    const ls=document.getElementById('login-screen');ls.style.display='flex';ls.style.opacity='0';
+    requestAnimationFrame(()=>{ls.style.transition='opacity .4s';ls.style.opacity='1';});
+    setTimeout(()=>ls.style.transition='',400);
+    document.getElementById('login-user').value='';document.getElementById('login-pass').value='';
+    document.getElementById('login-err').textContent='';
+    isAdmin=false;isRifle=false;viewerMode=false;
+    document.querySelector('.login-mode-btn').textContent='ล็อกอินเป็นผู้ชม (ไม่ต้องมีรหัส)';
+    document.getElementById('login-pass').placeholder='รหัสผ่าน / รหัสหน่วยงาน';
+    document.getElementById('nav-accounts').style.display='none';
+    goPage('dashboard');
+  },300);
+}
+
+// ===== NAVIGATION =====
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const names={dashboard:'ภาพรวม',agencies:'หน่วยงาน',vehicles:'ยานพาหนะ',plates:'ป้ายทะเบียน',accounts:'จัดการบัญชีผู้ดูแล'};
+  document.getElementById('topbar-title').textContent=names[id]||id;
+  closeDrawer('drawer-vehicle');
+  if(id==='accounts')renderAccounts();
+}
+
+// ===== UTILS =====
+function plateCls(t){const m={ราชการ:'plate-gov',พาณิชย์:'plate-com',ทหาร:'plate-mil'};return'plate '+(m[t]||'plate-private')}
+function statusBadge(s){
+  if(s==='ใช้งาน')return`<span class="badge badge-active"><span class="dot dot-green"></span>${s}</span>`;
+  if(s==='ใกล้หมดอายุ')return`<span class="badge badge-exp"><span class="dot dot-yellow"></span>${s}</span>`;
+  return`<span class="badge badge-sus"><span class="dot dot-red"></span>${s}</span>`;
+}
+function typeBadge(t){const c={ส่วนบุคคล:'badge-private',ราชการ:'badge-gov',พาณิชย์:'badge-com',ทหาร:'badge-mil'};return`<span class="badge ${c[t]||'badge-private'}">${t}</span>`}
+const colorHex={ขาว:'#f5f5f5',ดำ:'#222',เทา:'#888',แดง:'#ef4444',น้ำเงิน:'#3b82f6',เงิน:'#c0c0c0',ชมพู:'#f472b6',เขียว:'#22c55e',ส้ม:'#f97316',เหลือง:'#eab308'};
+function colorSwatch(c){return`<span class="color-swatch" style="background:${colorHex[c]||'#aaa'}"></span>${c}`}
+function agencyName(id){const a=db.agencies.find(x=>x.id===id);return a?a.name:'—'}
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+  const stats=[
+    {val:db.agencies.length,label:'หน่วยงาน',icon:'🏛',color:'var(--accent)'},
+    {val:db.vehicles.length,label:'ยานพาหนะ',icon:'🚗',color:'var(--purple)'},
+    {val:db.plates.length,label:'ป้ายทะเบียน',icon:'🪪',color:'var(--orange)'},
+    {val:db.vehicles.filter(v=>v.status==='ใช้งาน').length,label:'รถที่ใช้งาน',icon:'✅',color:'var(--green)'},
+    {val:db.vehicles.filter(v=>v.status==='ใกล้หมดอายุ').length,label:'ใกล้หมดอายุ',icon:'⚠️',color:'var(--yellow)'},
+  ];
+  document.getElementById('dash-stats').innerHTML=stats.map((s,i)=>`
+    <div class="stat-card" style="animation:pageIn .3s ease ${i*.07}s both">
+      <div class="stat-icon">${s.icon}</div>
+      <div class="stat-val">${s.val}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`).join('');
+  document.getElementById('recent-vehicles').innerHTML=db.vehicles.slice().reverse().slice(0,6).map(v=>`
+    <tr><td><span class="${plateCls(v.type)}">${v.plate} ${v.province}</span></td>
+    <td style="font-size:12px;color:var(--text2)">${v.owner}</td>
+    <td>${statusBadge(v.status)}</td></tr>`).join('');
+  document.getElementById('dash-agencies').innerHTML=db.agencies.map(a=>`
+    <tr><td>${a.icon} ${a.name}</td>
+    <td style="font-size:12px;color:var(--text2)">${a.dept}</td>
+    <td style="font-weight:700">${db.vehicles.filter(v=>v.agencyId===a.id).length}</td></tr>`).join('');
+}
+
+// ===== AGENCIES =====
+function renderAgencies(){
+  document.getElementById('agency-count-label').textContent=`หน่วยงานทั้งหมด ${db.agencies.length} แห่ง`;
+  document.getElementById('agency-grid').innerHTML=db.agencies.map((a,i)=>{
+    const cnt=db.vehicles.filter(v=>v.agencyId===a.id).length;
+    return`<div class="agency-card" style="animation:pageIn .3s ease ${i*.06}s both">
+      <div class="agency-card-head">
+        <div class="agency-icon-lg">${a.icon}</div>
+        <div><div class="agency-card-name">${a.name}</div>
+        <div class="agency-card-dept">${a.dept} · <span class="badge badge-gov" style="font-size:10px;padding:1px 7px">${a.type}</span></div></div>
+      </div>
+      <div class="agency-card-stats">
+        <div class="agency-stat"><span>${cnt}</span>ยานพาหนะ</div>
+        ${a.desc?`<div class="agency-stat" style="flex:1;font-size:11px;color:var(--text3);align-self:center">${a.desc}</div>`:''}
+      </div>
+      ${isAdmin?`<div class="agency-card-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editAgency('${a.id}')"><i class="ti ti-edit"></i> แก้ไข</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteAgency('${a.id}')"><i class="ti ti-trash"></i></button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function populateAgencyDropdowns(){
+  ['veh-agency','veh-filter-agency'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const val=el.value;
+    el.innerHTML=`<option value="">${id==='veh-filter-agency'?'ทุกหน่วยงาน':'— ไม่สังกัด —'}</option>`+db.agencies.map(a=>`<option value="${a.id}">${a.icon} ${a.name}</option>`).join('');
+    el.value=val;
+  });
+  const pv=document.getElementById('pl-vehicle');if(!pv)return;
+  const pvVal=pv.value;
+  pv.innerHTML='<option value="">— ยังไม่เชื่อม —</option>'+db.vehicles.map(v=>`<option value="${v.id}">${v.plate} ${v.province} — ${v.owner}</option>`).join('');
+  pv.value=pvVal;
+}
+
+// ===== VEHICLES =====
+function renderVehicles(){
+  const q=(document.getElementById('veh-search').value||'').toLowerCase();
+  const fAg=document.getElementById('veh-filter-agency').value;
+  const fSt=document.getElementById('veh-filter-status').value;
+  let data=db.vehicles.filter(v=>{
+    if(fAg&&v.agencyId!==fAg)return false;
+    if(fSt&&v.status!==fSt)return false;
+    if(q&&!(v.plate.toLowerCase().includes(q)||v.owner.toLowerCase().includes(q)||v.make.toLowerCase().includes(q)))return false;
+    return true;
+  });
+  document.getElementById('vehicle-count-label').textContent=`แสดง ${data.length} รายการ จาก ${db.vehicles.length} คันทั้งหมด`;
+  document.getElementById('vehicle-tbody').innerHTML=data.length?data.map(v=>`
+    <tr style="cursor:pointer" onclick="showVehicleDetail('${v.id}')">
+      <td><span class="${plateCls(v.type)}">${v.plate} ${v.province}</span></td>
+      <td style="font-size:12px">${v.owner}</td>
+      <td style="font-size:12px;color:var(--text2)">${agencyName(v.agencyId)}</td>
+      <td style="font-size:12px">${v.make}</td>
+      <td>${colorSwatch(v.color)}</td>
+      <td>${typeBadge(v.type)}</td>
+      <td>${statusBadge(v.status)}</td>
+      ${isAdmin?`<td onclick="event.stopPropagation()" style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="editVehicle('${v.id}')"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteVehicle('${v.id}')"><i class="ti ti-trash"></i></button>
+      </td>`:'<td></td>'}
+    </tr>`).join(''):'<tr class="empty-row"><td colspan="8">ไม่พบข้อมูล</td></tr>';
+  document.getElementById('veh-action-th').style.display=isAdmin?'':'none';
+}
+
+// ===== PLATES =====
+function renderPlates(){
+  const q=(document.getElementById('plate-search').value||'').toLowerCase();
+  const fT=document.getElementById('plate-filter-type').value;
+  let data=db.plates.filter(p=>{
+    if(fT&&p.type!==fT)return false;
+    if(q&&!(p.num.toLowerCase().includes(q)||p.province.includes(q)))return false;
+    return true;
+  });
+  document.getElementById('plate-count-label').textContent=`แสดง ${data.length} ป้าย จาก ${db.plates.length} ทั้งหมด`;
+  document.getElementById('plate-tbody').innerHTML=data.length?data.map(p=>{
+    const v=db.vehicles.find(x=>x.id===p.vehicleId);
+    return`<tr>
+      <td><span class="${plateCls(p.type)}">${p.num} ${p.province}</span></td>
+      <td style="font-size:12px">${p.province}</td>
+      <td>${typeBadge(p.type)}</td>
+      <td style="font-size:12px;color:var(--text2)">${v?`${v.make} — ${v.owner}`:'—'}</td>
+      <td style="font-size:12px;color:var(--text3)">${p.reg||'—'}</td>
+      <td style="font-size:12px;color:var(--text3)">${p.exp||'—'}</td>
+      <td>${statusBadge(p.status)}</td>
+      ${isAdmin?`<td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="editPlate('${p.id}')"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deletePlate('${p.id}')"><i class="ti ti-trash"></i></button>
+      </td>`:'<td></td>'}
+    </tr>`;
+  }).join(''):'<tr class="empty-row"><td colspan="8">ไม่พบข้อมูล</td></tr>';
+  document.getElementById('plate-action-th').style.display=isAdmin?'':'none';
+}
+
+// ===== ACCOUNTS =====
+function renderAccounts(){
+  const grid=document.getElementById('accounts-grid');
+  let html=`<div class="account-card rifle-card-special" style="animation:pageIn .3s ease both">
+    <div class="account-card-head">
+      <div class="account-avatar-lg account-avatar-rifle">RF</div>
+      <div><div class="account-name">RIFLE</div><div class="account-role-label role-rifle">⚡ ผู้ดูแลระบบสูงสุด</div></div>
+    </div>
+    <div class="account-info">รหัสผ่าน: <code>••••••••</code> (สงวนไว้)</div>
+    <div style="font-size:12px;color:var(--text3)">สิทธิ์: จัดการข้อมูลทั้งหมด + จัดการบัญชีผู้ดูแล</div>
+  </div>`;
+  if(managerAccounts.length===0){
+    html+=`<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3)">
+      <i class="ti ti-users-plus" style="font-size:44px;display:block;margin-bottom:14px;opacity:.3"></i>
+      ยังไม่มีบัญชีผู้จัดการ กด "เพิ่มบัญชีผู้จัดการ" ด้านบนเพื่อสร้าง
+    </div>`;
+  }else{
+    html+=managerAccounts.map((m,i)=>`<div class="account-card" style="animation:pageIn .3s ease ${(i+1)*.07}s both">
+      <div class="account-card-head">
+        <div class="account-avatar-lg account-avatar-mgr">${m.name.slice(0,2).toUpperCase()}</div>
+        <div><div class="account-name">${m.name}</div><div class="account-role-label role-manager">🔧 ผู้จัดการระบบ</div></div>
+      </div>
+      <div class="account-info">รหัสผ่าน: <code>${m.pass}</code></div>
+      ${m.note?`<div style="font-size:12px;color:var(--text3);margin-bottom:12px">${m.note}</div>`:'<div style="margin-bottom:12px"></div>'}
+      <div class="account-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editManager('${m.id}')"><i class="ti ti-edit"></i> แก้ไข</button>
+        <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteManager('${m.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+  }
+  grid.innerHTML=html;
+}
+
+function openAddManager(){
+  if(!isRifle){showToast('เฉพาะ RIFLE เท่านั้น','error');return;}
+  document.getElementById('modal-manager-title').textContent='เพิ่มบัญชีผู้จัดการ';
+  ['mgr-name','mgr-pass','mgr-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mgr-edit-id').value='';
+  openModal('modal-manager');
+}
+function editManager(id){
+  if(!isRifle)return;
+  const m=managerAccounts.find(x=>x.id===id);if(!m)return;
+  document.getElementById('modal-manager-title').textContent='แก้ไขบัญชีผู้จัดการ';
+  document.getElementById('mgr-name').value=m.name;document.getElementById('mgr-pass').value=m.pass;
+  document.getElementById('mgr-note').value=m.note||'';document.getElementById('mgr-edit-id').value=id;
+  openModal('modal-manager');
+}
+function saveManager(){
+  const name=document.getElementById('mgr-name').value.trim();
+  const pass=document.getElementById('mgr-pass').value.trim();
+  if(!name){showToast('กรุณากรอกชื่อ','error');return;}
+  if(!pass){showToast('กรุณากรอกรหัสผ่าน','error');return;}
+  if(pass===RIFLE_CODE){showToast('ไม่สามารถใช้รหัส RIFLE ได้','error');return;}
+  const eid=document.getElementById('mgr-edit-id').value;
+  if(managerAccounts.find(m=>m.pass===pass&&m.id!==eid)){showToast('รหัสนี้ถูกใช้แล้ว','error');return;}
+  const note=document.getElementById('mgr-note').value.trim();
+  if(eid){const idx=managerAccounts.findIndex(x=>x.id===eid);managerAccounts[idx]={...managerAccounts[idx],name,pass,note};showToast('แก้ไขบัญชีสำเร็จ');}
+  else{managerAccounts.push({id:genId('mgr'),name,pass,note});showToast('เพิ่มบัญชีผู้จัดการแล้ว');}
+  closeModal('modal-manager');renderAccounts();fbSave();
+}
+function deleteManager(id){
+  if(!isRifle)return;
+  if(!confirm('ลบบัญชีผู้จัดการนี้?'))return;
+  managerAccounts=managerAccounts.filter(m=>m.id!==id);
+  renderAccounts();fbSave();showToast('ลบบัญชีแล้ว','error');
+}
+
+// ===== VEHICLE DETAIL =====
+function showVehicleDetail(id){
+  const v=db.vehicles.find(x=>x.id===id);if(!v)return;
+  const ag=db.agencies.find(a=>a.id===v.agencyId);
+  const rp=db.plates.find(p=>p.vehicleId===id);
+  document.getElementById('drawer-veh-title').textContent=`${v.plate} ${v.province}`;
+  document.getElementById('drawer-veh-body').innerHTML=`
+    <div style="text-align:center;margin-bottom:22px">
+      <span class="${plateCls(v.type)} plate-big">${v.plate} ${v.province}</span>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">ข้อมูลยานพาหนะ</div>
+      <div class="detail-grid">
+        <div class="detail-field"><div class="detail-field-label">เจ้าของ</div><div class="detail-field-val">${v.owner}</div></div>
+        <div class="detail-field"><div class="detail-field-label">หน่วยงาน</div><div class="detail-field-val">${ag?ag.icon+' '+ag.name:'—'}</div></div>
+        <div class="detail-field"><div class="detail-field-label">ยี่ห้อ / รุ่น</div><div class="detail-field-val">${v.make}</div></div>
+        <div class="detail-field"><div class="detail-field-label">ปีผลิต</div><div class="detail-field-val">พ.ศ. ${v.year}</div></div>
+        <div class="detail-field"><div class="detail-field-label">สีรถ</div><div class="detail-field-val">${colorSwatch(v.color)}</div></div>
+        <div class="detail-field"><div class="detail-field-label">ประเภท</div><div class="detail-field-val">${typeBadge(v.type)}</div></div>
+        <div class="detail-field"><div class="detail-field-label">สถานะ</div><div class="detail-field-val">${statusBadge(v.status)}</div></div>
+        <div class="detail-field"><div class="detail-field-label">จดทะเบียน</div><div class="detail-field-val">${v.reg||'—'}</div></div>
+        <div class="detail-field" style="grid-column:1/-1"><div class="detail-field-label">วันหมดอายุ</div><div class="detail-field-val">${v.exp||'—'}</div></div>
+        ${v.note?`<div class="detail-field" style="grid-column:1/-1"><div class="detail-field-label">หมายเหตุ</div><div class="detail-field-val">${v.note}</div></div>`:''}
+      </div>
+    </div>
+    ${rp?`<div class="detail-section"><div class="detail-section-title">ป้ายทะเบียน</div>
+      <div class="detail-field"><div class="detail-field-label">เลขทะเบียน</div><div class="detail-field-val"><span class="${plateCls(rp.type)}">${rp.num} ${rp.province}</span></div></div>
+    </div>`:''}
+    ${isAdmin?`<div style="margin-top:18px;display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="editVehicle('${v.id}');closeDrawer('drawer-vehicle')"><i class="ti ti-edit"></i> แก้ไข</button>
+      <button class="btn btn-ghost" style="color:var(--red)" onclick="deleteVehicle('${v.id}');closeDrawer('drawer-vehicle')"><i class="ti ti-trash"></i></button>
+    </div>`:''}`;
+  document.getElementById('drawer-vehicle').classList.add('open');
+}
+
+// ===== MODALS =====
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function closeDrawer(id){document.getElementById(id).classList.remove('open')}
+
+// ===== AGENCY CRUD =====
+function openAddAgency(){
+  if(!isAdmin){showToast('ต้องใช้รหัส RIFLE หรือ Manager','error');return;}
+  document.getElementById('modal-agency-title').textContent='เพิ่มหน่วยงานใหม่';
+  ['ag-name','ag-dept','ag-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ag-icon').value='🏛';document.getElementById('ag-type').value='ราชการ';document.getElementById('ag-edit-id').value='';
+  openModal('modal-agency');
+}
+function editAgency(id){
+  if(!isAdmin)return;
+  const a=db.agencies.find(x=>x.id===id);
+  document.getElementById('modal-agency-title').textContent='แก้ไขหน่วยงาน';
+  document.getElementById('ag-name').value=a.name;document.getElementById('ag-dept').value=a.dept;
+  document.getElementById('ag-icon').value=a.icon;document.getElementById('ag-type').value=a.type;
+  document.getElementById('ag-desc').value=a.desc||'';document.getElementById('ag-edit-id').value=id;
+  openModal('modal-agency');
+}
+function saveAgency(){
+  const name=document.getElementById('ag-name').value.trim();if(!name){document.getElementById('ag-name').focus();return;}
+  const eid=document.getElementById('ag-edit-id').value;
+  const obj={name,dept:document.getElementById('ag-dept').value.trim(),icon:document.getElementById('ag-icon').value||'🏛',type:document.getElementById('ag-type').value,desc:document.getElementById('ag-desc').value.trim()};
+  if(eid){const idx=db.agencies.findIndex(x=>x.id===eid);db.agencies[idx]={...db.agencies[idx],...obj};}
+  else{db.agencies.push({id:genId('ag'),...obj});}
+  closeModal('modal-agency');populateAgencyDropdowns();renderAgencies();renderDashboard();
+  fbSave();
+  showToast(eid?'แก้ไขหน่วยงานแล้ว':'เพิ่มหน่วยงานสำเร็จ');
+}
+function deleteAgency(id){
+  if(!isAdmin)return;if(!confirm('ลบหน่วยงานนี้?'))return;
+  db.agencies=db.agencies.filter(a=>a.id!==id);
+  db.vehicles.forEach(v=>{if(v.agencyId===id)v.agencyId='';});
+  populateAgencyDropdowns();renderAgencies();renderDashboard();renderVehicles();fbSave();showToast('ลบหน่วยงานแล้ว','error');
+}
+
+// ===== VEHICLE CRUD =====
+function openAddVehicle(){
+  if(!isAdmin){showToast('ต้องใช้รหัส RIFLE หรือ Manager','error');return;}
+  document.getElementById('modal-vehicle-title').textContent='เพิ่มยานพาหนะใหม่';
+  ['veh-plate','veh-owner','veh-make','veh-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('veh-province').value='มค';document.getElementById('veh-agency').value='';
+  document.getElementById('veh-year').value='2566';document.getElementById('veh-color').value='ขาว';
+  document.getElementById('veh-type').value='ส่วนบุคคล';document.getElementById('veh-status').value='ใช้งาน';
+  document.getElementById('veh-reg').value='';document.getElementById('veh-exp').value='';document.getElementById('veh-edit-id').value='';
+  populateAgencyDropdowns();openModal('modal-vehicle');
+}
+function editVehicle(id){
+  if(!isAdmin)return;
+  const v=db.vehicles.find(x=>x.id===id);
+  document.getElementById('modal-vehicle-title').textContent='แก้ไขยานพาหนะ';
+  document.getElementById('veh-plate').value=v.plate;document.getElementById('veh-province').value=v.province;
+  document.getElementById('veh-owner').value=v.owner;document.getElementById('veh-agency').value=v.agencyId||'';
+  document.getElementById('veh-make').value=v.make;document.getElementById('veh-year').value=v.year;
+  document.getElementById('veh-color').value=v.color;document.getElementById('veh-type').value=v.type;
+  document.getElementById('veh-status').value=v.status;document.getElementById('veh-reg').value='';
+  document.getElementById('veh-exp').value='';document.getElementById('veh-note').value=v.note||'';document.getElementById('veh-edit-id').value=id;
+  populateAgencyDropdowns();openModal('modal-vehicle');
+}
+function saveVehicle(){
+  const plate=document.getElementById('veh-plate').value.trim();
+  const owner=document.getElementById('veh-owner').value.trim();
+  const make=document.getElementById('veh-make').value.trim();
+  if(!plate||!owner||!make){showToast('กรุณากรอกข้อมูลที่จำเป็น','error');return;}
+  const eid=document.getElementById('veh-edit-id').value;
+  const obj={plate,province:document.getElementById('veh-province').value,owner,agencyId:document.getElementById('veh-agency').value,make,year:parseInt(document.getElementById('veh-year').value)||2566,color:document.getElementById('veh-color').value,type:document.getElementById('veh-type').value,status:document.getElementById('veh-status').value,reg:document.getElementById('veh-reg').value,exp:document.getElementById('veh-exp').value,note:document.getElementById('veh-note').value};
+  if(eid){const idx=db.vehicles.findIndex(x=>x.id===eid);db.vehicles[idx]={...db.vehicles[idx],...obj};}
+  else{db.vehicles.push({id:genId('v'),...obj});}
+  closeModal('modal-vehicle');renderVehicles();renderDashboard();fbSave();showToast(eid?'แก้ไขยานพาหนะแล้ว':'เพิ่มยานพาหนะสำเร็จ');
+}
+function deleteVehicle(id){
+  if(!isAdmin)return;if(!confirm('ลบยานพาหนะนี้?'))return;
+  db.vehicles=db.vehicles.filter(v=>v.id!==id);
+  db.plates.forEach(p=>{if(p.vehicleId===id)p.vehicleId='';});
+  renderVehicles();renderDashboard();renderPlates();fbSave();showToast('ลบยานพาหนะแล้ว','error');
+}
+
+// ===== PLATE CRUD =====
+function openAddPlate(){
+  if(!isAdmin){showToast('ต้องใช้รหัส RIFLE หรือ Manager','error');return;}
+  document.getElementById('modal-plate-title').textContent='เพิ่มป้ายทะเบียนใหม่';
+  document.getElementById('pl-num').value='';document.getElementById('pl-province').value='มค';
+  document.getElementById('pl-type').value='ส่วนบุคคล';document.getElementById('pl-vehicle').value='';
+  document.getElementById('pl-reg').value='';document.getElementById('pl-exp').value='';
+  document.getElementById('pl-status').value='ใช้งาน';document.getElementById('pl-edit-id').value='';
+  populateAgencyDropdowns();openModal('modal-plate');
+}
+function editPlate(id){
+  if(!isAdmin)return;
+  const p=db.plates.find(x=>x.id===id);
+  document.getElementById('modal-plate-title').textContent='แก้ไขป้ายทะเบียน';
+  document.getElementById('pl-num').value=p.num;document.getElementById('pl-province').value=p.province;
+  document.getElementById('pl-type').value=p.type;document.getElementById('pl-vehicle').value=p.vehicleId||'';
+  document.getElementById('pl-status').value=p.status;document.getElementById('pl-edit-id').value=id;
+  populateAgencyDropdowns();openModal('modal-plate');
+}
+function savePlate(){
+  const num=document.getElementById('pl-num').value.trim();if(!num){document.getElementById('pl-num').focus();return;}
+  const eid=document.getElementById('pl-edit-id').value;
+  const obj={num,province:document.getElementById('pl-province').value,type:document.getElementById('pl-type').value,vehicleId:document.getElementById('pl-vehicle').value,reg:document.getElementById('pl-reg').value,exp:document.getElementById('pl-exp').value,status:document.getElementById('pl-status').value};
+  if(eid){const idx=db.plates.findIndex(x=>x.id===eid);db.plates[idx]={...db.plates[idx],...obj};}
+  else{db.plates.push({id:genId('pl'),...obj});}
+  closeModal('modal-plate');renderPlates();renderDashboard();fbSave();showToast(eid?'แก้ไขป้ายแล้ว':'เพิ่มป้ายทะเบียนสำเร็จ');
+}
+function deletePlate(id){
+  if(!isAdmin)return;if(!confirm('ลบป้ายทะเบียนนี้?'))return;
+  db.plates=db.plates.filter(p=>p.id!==id);renderPlates();renderDashboard();fbSave();showToast('ลบป้ายทะเบียนแล้ว','error');
+}
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg,type='success'){
+  clearTimeout(toastTimer);
+  const t=document.getElementById('toast');
+  const icon=t.querySelector('i');
+  document.getElementById('toast-msg').textContent=msg;
+  t.className='toast '+(type==='error'?'error':type==='info'?'info':'success');
+  icon.className=type==='error'?'ti ti-alert-circle':type==='info'?'ti ti-info-circle':'ti ti-check';
+  t.classList.add('show');
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
+});
+
+// ===== RESTORE SESSION เมื่อรีเฟรช =====
+// รอให้ Firebase โหลดเสร็จก่อน แล้วค่อย restore session
+setTimeout(() => {
+  try { initFirebase(); } catch(e) {}
+  // รอ Firebase ดึงข้อมูล 1.5 วินาที แล้ว restore session
+  setTimeout(() => { _restoreSession(); }, firebaseReady ? 1500 : 0);
+}, 200);
+</script>
+</body>
+</html>
